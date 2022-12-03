@@ -38,4 +38,12 @@ public class UserController {
             return new BasicRespone<String>(ex.getMessage(), -1, null);
         }
     }
+
+    @PostMapping("/signup")
+    public BasicRespone<User> signUp(@Valid @RequestBody User userInfo, BindingResult bindingResult) {
+        if (bindingResult.hasErrors())
+            return new BasicRespone<>("Invalid User Info", -1, null);
+
+        return userService.signUp(userInfo);
+    }
 }
