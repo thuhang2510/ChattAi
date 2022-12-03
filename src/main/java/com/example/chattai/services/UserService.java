@@ -56,4 +56,24 @@ public class UserService {
             return new BasicRespone<>("Exception Occured : " + ex.getMessage(), -1, null);
         }
     }
+
+    public BasicRespone<User> updateResetPassword(String token, String email){
+        try{
+            User user = userRepo.getUserByEmail(email);
+
+            if(user == null)
+                return new BasicRespone<User>("email not exist", -1, null);
+
+            user.setResetPasswordToken(token);
+
+            user = userRepo.save(user);
+            if(user == null)
+                return new BasicRespone<>("Update reset password not success", -1, null);
+            return new BasicRespone<>("Update reset password success", 0, user);
+        }
+        catch(RuntimeException ex)
+        {
+            return new BasicRespone<>("Exception Occured : " + ex.getMessage(), -1, null);
+        }
+    }
 }
