@@ -26,4 +26,19 @@ public class UserService {
             return new BasicRespone<User>("Exception Occured : " + ex.getMessage(), -1, null);
         }
     }
+
+    public BasicRespone<User> findByEmailAndPassword(String email, String password) {
+        try
+        {
+            User user = userRepo.getUserByEmailAndPassword(email, password);
+            if(user == null)
+                return new BasicRespone<User>("User not exist", -1, null);
+
+            return new BasicRespone<User>("User exist", 0, user);
+        }
+        catch (RuntimeException ex)
+        {
+            return new BasicRespone<User>("Exception Occured : " + ex.getMessage(), -1, null);
+        }
+    }
 }
