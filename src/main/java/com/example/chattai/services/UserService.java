@@ -14,7 +14,11 @@ public class UserService {
     public BasicRespone<User> addUser(User userInfo) {
         try
         {
-            User user = userRepo.save(userInfo);
+            User user = userRepo.getUserByEmail(userInfo.getEmail());
+            if(user != null)
+                return new BasicRespone<>("Email exist", -1, null);
+
+            user = userRepo.save(userInfo);
 
             if(user == null)
                 return new BasicRespone<User>("Add user failed", -1, null);
