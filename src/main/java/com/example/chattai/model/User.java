@@ -17,6 +17,7 @@ public class User {
     private String email;
     private String password;
     private String gender;
+    private String resetPasswordToken;
 
     public User(String firstname, String lastname, String email, String password, String gender){
         this.firstname = firstname;
