@@ -54,7 +54,7 @@ public class UserController {
         if (bindingResult.hasErrors())
             return new BasicRespone<>("Invalid User Info", -1, null);
 
-        return userService.signUp(userInfo);
+        return userService.addUser(userInfo);
     }
 
     @PostMapping("/forgot_password")
