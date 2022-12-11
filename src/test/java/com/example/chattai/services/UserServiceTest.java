@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringRunner.class)
-public class UserServicesTest {
+public class UserServiceTest {
 
     @TestConfiguration
     public static class TestUserServiceConfiguration{
