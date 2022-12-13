@@ -52,7 +52,7 @@ public class UserController {
     @PostMapping("/signup")
     public BasicRespone<User> signUp(@Valid @RequestBody User userInfo, BindingResult bindingResult) {
         if (bindingResult.hasErrors())
-            return new BasicRespone<>("Invalid User Info", -1, null);
+            return new BasicRespone<>(bindingResult.getAllErrors().get(0).getDefaultMessage(), -1, null);
 
         return userService.addUser(userInfo);
     }
