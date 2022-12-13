@@ -1,6 +1,8 @@
 package com.example.chattai.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,8 +16,14 @@ public class User {
     private Integer id;
     private String firstname;
     private String lastname;
+
+    @NotBlank(message = "Email cannot blank")
+    @Email(message = "Invalid email")
     private String email;
+
+    @NotBlank(message = "Password cannot blank")
     private String password;
+
     private String gender;
     private String resetPasswordToken;
 
