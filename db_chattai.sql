@@ -7,4 +7,6 @@ create table tbl_user(
 	email VARCHAR(55) NULL UNIQUE,
 );
 
+select * from tbl_user
+
 alter table tbl_user add reset_password_token varchar(55)
