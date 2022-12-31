@@ -3,6 +3,9 @@ package com.example.chattai.services;
 import com.example.chattai.model.User;
 import com.example.chattai.repositories.UserRepo;
 import com.example.chattai.respone.BasicRespone;
+import com.example.chattai.utils.EmailUtil;
+import com.example.chattai.utils.Utility;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +13,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private EmailUtil emailUtil;
 
     public BasicRespone<User> addUser(User userInfo) {
         try
@@ -64,5 +70,17 @@ public class UserService {
         {
             return new BasicRespone<>("Exception Occured : " + ex.getMessage(), -1, null);
         }
+    }
+
+    public BasicRespone<String> processForgetPassword(String email, String siteURL){
+        String token = RandomString.make(55);
+
+        BasicRespone<User> userBasicRespone = updateResetPassword(token, email);
+
+        if(userBasicRespone.getData() == null)
+            return new BasicRespone<>(userBasicRespone.getMessage(), -1, null);
+
+        String resetPasswordLink = siteURL + "/reset_password?token=" + token;
+        return emailUtil.sendEmail(email, resetPasswordLink);
     }
 }
