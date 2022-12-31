@@ -4,7 +4,6 @@ import com.example.chattai.model.User;
 import com.example.chattai.request.LoginRequest;
 import com.example.chattai.respone.BasicRespone;
 import com.example.chattai.services.UserService;
-import com.example.chattai.utils.EmailUtil;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(UserController.class)
@@ -32,10 +30,8 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    @MockBean
-    private EmailUtil emailUtil;
-
     private User user;
+    private final String SITE_URL = "http://localhost/api/v1";
 
     @Before
     public void init() {
@@ -314,6 +310,86 @@ public class UserControllerTest {
 
         assertEquals(200, status);
         assertEquals("Exception", jsonObject.get("message"));
+        assertEquals(-1, jsonObject.get("code"));
+        assertTrue(jsonObject.isNull("data"));
+    }
+
+    @Test
+    public void givenEmailNotExistWhenProcessForgotPasswordThenNotSendEmailChangePassword() throws Exception {
+        given(userService.processForgetPassword(user.getEmail(), SITE_URL))
+                .willReturn(new BasicRespone<>("email not exist", -1, null));
+
+        MvcResult mvcResult = mvc.perform(post("/api/v1/forgot_password")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParam("email", user.getEmail()))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        String content = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(content);
+
+        assertEquals(200, status);
+        assertEquals("email not exist", jsonObject.get("message"));
+        assertEquals(-1, jsonObject.get("code"));
+        assertTrue(jsonObject.isNull("data"));
+    }
+
+    @Test
+    public void givenEmailExistWhenForgotPasswordThenSendEmailChangePasswordSuccess() throws Exception {
+        given(userService.processForgetPassword(user.getEmail(), SITE_URL))
+                .willReturn(new BasicRespone<>("Send email success", 0, ""));
+
+        MvcResult mvcResult = mvc.perform(post("/api/v1/forgot_password")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParam("email", user.getEmail()))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        String content = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(content);
+
+        assertEquals(200, status);
+        assertEquals("Send email success", jsonObject.get("message"));
+        assertEquals(0, jsonObject.get("code"));
+        assertFalse(jsonObject.isNull("data"));
+    }
+
+    @Test
+    public void givenThrowsUnsupportedEncodingExceptionWhenForgotPasswordThenNotSendEmail() throws Exception {
+        given(userService.processForgetPassword(user.getEmail(), SITE_URL))
+                .willReturn(new BasicRespone<>("Unsupported Encoding Exception", -1, null));
+
+        MvcResult mvcResult = mvc.perform(post("/api/v1/forgot_password")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParam("email", user.getEmail()))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        String content = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(content);
+
+        assertEquals(200, status);
+        assertEquals("Unsupported Encoding Exception", jsonObject.get("message"));
+        assertEquals(-1, jsonObject.get("code"));
+        assertTrue(jsonObject.isNull("data"));
+    }
+
+    @Test
+    public void givenThrowsMessagingExceptionWhenForgotPasswordThenNotSendEmail() throws Exception {
+        given(userService.processForgetPassword(user.getEmail(), SITE_URL))
+                .willReturn(new BasicRespone<>("Messaging Exception", -1, null));
+
+        MvcResult mvcResult = mvc.perform(post("/api/v1/forgot_password")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParam("email", user.getEmail()))
+                .andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        String content = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(content);
+
+        assertEquals(200, status);
+        assertEquals("Messaging Exception", jsonObject.get("message"));
         assertEquals(-1, jsonObject.get("code"));
         assertTrue(jsonObject.isNull("data"));
     }
