@@ -1,5 +1,6 @@
 package com.example.chattai.utils;
 
+import com.example.chattai.respone.BasicRespone;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +19,25 @@ public class EmailUtil {
     @Value("${spring.mail.username}")
     private String username;
 
-    public void sendEmail(String email, String resetPasswordLink) throws MessagingException, UnsupportedEncodingException {
+    public BasicRespone<String> sendEmail(String email, String resetPasswordLink){
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom(username, "ChattAi Support");
-        helper.setTo(email);
-
         String subject = "Here's the link to reset your password";
         String content = "Hello, You have requested to reset your password."
                 + "Click the link below to change your password"
                 + "<a href=\"" + resetPasswordLink + "\"> Change my password</a>" + "";
 
-        helper.setSubject(subject);
-        helper.setText(content, true);
-
-        javaMailSender.send(message);
+        try{
+            helper.setFrom(username, "ChattAi Support");
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(content, true);
+            javaMailSender.send(message);
+            return new BasicRespone<>("Send email success", 0, content);
+        } catch (UnsupportedEncodingException ex) {
+            return new BasicRespone<>(ex.getMessage(), -1, null);
+        } catch (MessagingException e) {
+            return new BasicRespone<>(e.getMessage(), -1, null);
+        }
     }
 }
