@@ -7,19 +7,15 @@ import com.example.chattai.respone.BasicRespone;
 import com.example.chattai.services.UserService;
 import com.example.chattai.utils.EmailUtil;
 import com.example.chattai.utils.Utility;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -58,24 +54,10 @@ public class UserController {
     }
 
     @PostMapping("/forgot_password")
-    public BasicRespone<String> processForgotPassword(HttpServletRequest request) {
-        try {
-            String email = request.getParameter("email");
-            String token = RandomString.make(55);
+    public BasicRespone<String> forgotPassword(HttpServletRequest request) {
+        String email = request.getParameter("email");
+        String siteURL = Utility.getSiteURL(request);
 
-            BasicRespone<User> userBasicRespone = userService.updateResetPassword(token, email);
-
-            if(userBasicRespone.getData() == null)
-                return new BasicRespone<>(userBasicRespone.getMessage(), -1, null);
-
-            String resetPasswordLink = Utility.getSiteURL(request) + "/reset_password?token=" + token;
-            emailUtil.sendEmail(email, resetPasswordLink);
-
-            return new BasicRespone<>("Send email success", 0, token);
-        } catch (UnsupportedEncodingException ex) {
-            return new BasicRespone<>(ex.getMessage(), -1, null);
-        } catch (MessagingException e) {
-            return new BasicRespone<>(e.getMessage(), -1, null);
-        }
+        return userService.processForgetPassword(email, siteURL);
     }
 }
