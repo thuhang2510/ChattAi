@@ -3,6 +3,7 @@ package com.example.chattai.services;
 import com.example.chattai.model.User;
 import com.example.chattai.repositories.UserRepo;
 import com.example.chattai.respone.BasicRespone;
+import com.example.chattai.utils.EmailUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,9 @@ public class UserServiceTest {
 
     @MockBean
     UserRepo userRepo;
+
+    @MockBean
+    EmailUtil emailUtil;
 
     @Autowired
     private UserService userService;
