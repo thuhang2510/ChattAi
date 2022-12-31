@@ -4,7 +4,6 @@ import com.example.chattai.model.User;
 import com.example.chattai.repositories.UserRepo;
 import com.example.chattai.respone.BasicRespone;
 import com.example.chattai.utils.EmailUtil;
-import com.example.chattai.utils.Utility;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
